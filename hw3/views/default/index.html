@@ -1,0 +1,57 @@
+{{extend 'layout.html'}}
+
+{{block head}}
+<script src="{{=URL('static', 'js/vue.js')}}"></script>
+<script>
+    var get_posts_url = "{{=URL('api', 'get_posts')}}";
+    var add_post_url = "{{=URL('api', 'add_post', user_signature=True)}}";
+    var del_post_url = "{{=URL('api', 'del_post', user_signature=True)}}";
+</script>
+{{end}}
+
+<div class="main_content">
+
+    <div id="vue-div" class="display:none">
+        <!-- Your code goes here.  Remember to call $("#vue-div").show() once you get the data for the first time. -->
+        <!-- Creates the buttons to add a new post, or cancel creating a post. -->
+        <div class="button_bar">
+            <button v-if="!isAddingPost" class="btn btn-danger btn-sm" v-on:click="newPostButton()"
+                    v-bind:class="{'disabled': !loggedIn}"> Add new post </button>
+            <button v-if="isAddingPost" class ="btn btn-danger btn-sm" v-on:click="newPostButton()"
+                    v-bind:class="{'disabled': !loggedIn}"> Cancel </button>
+
+
+        </div>
+        <!-- Creates the form to add a post -->
+        <div v-if="isAddingPost" id="add-new-post">
+            <form action="#" v-on:submit.prevent="addNewPost" class="form-horizontal" enctype="multipart/form-data"
+                    method="post">
+                <div class = "form-group" id="postBody"> </div>
+                <div>
+                    <input class="form-control string" id="formContent" v-model="post_content"
+                           placeholder="What would you like to post?" type="text" />
+                    <span class="help-block"></span>
+                </div>
+                <div class = "form-group" id="postButton">
+                    <div>
+                        <input class="btn btn-primary" id="add_post_submit" type="submit" value="Post"/>
+                    </div>
+                </div>
+            </form>
+
+    </div>
+     <div class="postList">
+            <div class="post" v-for="post in posts">
+                <h1>${post.post_content}</h1>
+                <h1>${post.user_email}</h1>
+                <h1></h1>
+                <h1></h1>
+            </div>
+     </div>
+
+</div>
+
+
+<script src="{{=URL('static', 'js/default_index.js')}}"></script>
+
+</div>
