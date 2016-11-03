@@ -97,10 +97,19 @@ var app = function() {
     self.getPost = function(){
         $.getJSON(get_post_url(0, 4), function (data) {
             self.vue.posts = data.posts;
-            self.vue.has_more = data.has_more;
+            self.vue.hasMore = data.hasMore;
             self.vue.loggedIn = data.loggedIn;
 
         })
+    };
+
+    self.getMore = function () {
+        var numPosts = self.vue.posts.length;
+        $.getJSON(get_post_url(numPosts, numPosts + 4), function (data) {
+            self.vue.hasMore = data.hasMore;
+            self.extend(self.vue.posts, data.posts);
+
+        });
     };
     // Complete as needed.
     self.vue = new Vue({
@@ -122,7 +131,8 @@ var app = function() {
             addNewPost: self.addNewPost,
             deletePost: self.deletePost,
             submitEdit: self.submitEdit,
-            editPostNotify: self.editPostNotify
+            editPostNotify: self.editPostNotify,
+            getMore: self.getMore
         }
 
     });

@@ -59,17 +59,18 @@
                         </div>
                     </form>
                 </div>
-
-
-
                 Posted By: ${post.user_email} <br> <br>
                 Created On: ${post.created_on} <br> <br>
-                <i class="fa fa-trash-o" id="delButton" v-on:click="deletePost(post.id)"></i>
-                <i class="fa fa-pencil" id="editButton" v-on:click="editPostNotify(post.id)"></i>
-
+                <div v-if="user_email=post.user_email">
+                     <i class="fa fa-trash-o" id="delButton"  v-on:click="deletePost(post.id)"></i>
+                    <i class="fa fa-pencil" id="editButton" v-on:click="editPostNotify(post.id)"></i>
+                </div>
             </div>
-     </div>
+         <div v-if="hasMore" class="show_more">
+            <button class="btn btn-default" v-on:click="getMore()">Show More</button>
+        </div>
 
+     </div>
 </div>
 
 
