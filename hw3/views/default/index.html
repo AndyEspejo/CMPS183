@@ -6,6 +6,7 @@
     var get_posts_url = "{{=URL('api', 'get_posts')}}";
     var add_post_url = "{{=URL('api', 'add_post', user_signature=True)}}";
     var del_post_url = "{{=URL('api', 'del_post', user_signature=True)}}";
+    var edit_post_url = "{{=URL('api', 'edit_post', user_signature=True)}}";
 </script>
 {{end}}
 
@@ -39,13 +40,33 @@
                 </div>
             </form>
 
-    </div>
+         </div>
      <div class="postList">
             <div class="post" v-for="post in posts">
-                <h1>${post.post_content}</h1>
-                <h1>${post.user_email}</h1>
-                <h1></h1>
-                <h1></h1>
+                <p v-if="isEditing != post.id">${post.post_content}</p>
+                <div v-if="isEditing == post.id" id="editingPost">
+                    <form  class="form-horizontal" enctype="multipart/form-data" method="post">
+                        <div class="form-group" id="editBody"></div>
+                        <div>
+                            <textarea v-model="post_content" value="$(post.post_content)"></textarea>
+                            <span class="help-block"></span>
+                        </div>
+                        <div class="form-group" id="editButtons">
+                            <button class="post-edit-button" id="post-edit-submit"
+                                    v-on:click="submitEdit(post.id)"> Post </button>
+                            <button class="cancel-button" id="cancel-edit"
+                                    v-on:click="editPostNotify(post.id)"> Cancel </button>
+                        </div>
+                    </form>
+                </div>
+
+
+
+                Posted By: ${post.user_email} <br> <br>
+                Created On: ${post.created_on} <br> <br>
+                <i class="fa fa-trash-o" id="delButton" v-on:click="deletePost(post.id)"></i>
+                <i class="fa fa-pencil" id="editButton" v-on:click="editPostNotify(post.id)"></i>
+
             </div>
      </div>
 

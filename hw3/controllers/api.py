@@ -17,7 +17,7 @@ def get_posts():
 
     posts = []
     hasMore = False
-    rows = db().select(db.post.ALL, limitby=(start_idx, end_idx+1))
+    rows = db().select(db.post.ALL, orderby=~db.post.created_on, limitby=(start_idx, end_idx+1))
     for i, r in enumerate(rows):
             if i < end_idx - start_idx:
                 t = dict(
@@ -32,10 +32,12 @@ def get_posts():
             else:
                 hasMore = True
     loggedIn = auth.user_id is not None
+    user_email =auth.user.email if loggedIn else None
     return response.json(dict(
         posts=posts,
         loggedIn=loggedIn,
-        hasMore=hasMore
+        hasMore=hasMore,
+        user_email=user_email
     ))
 
 
@@ -56,5 +58,16 @@ def add_post():
 def del_post():
     """Used to delete a post."""
     # Implement me!
-    return response.json(dict())
+    db(db.post.id == request.vars.postID).delete()
+    return "ok"
+
+
+@auth.requires_signature()
+def edit_post():
+    print request.vars.postID
+    p = db.post(request.vars.postID)
+    p.post_content = request.vars.post_content
+    p.update_record()
+    return "ok"
+
 

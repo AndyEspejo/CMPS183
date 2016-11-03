@@ -13,6 +13,7 @@ var app = function() {
         }
     };
 
+    // Following two functions are needed to add new post
     self.newPostButton = function () {
         // Lets us know we are currently writing a post so we can't start writing another post
         self.vue.isAddingPost = !self.vue.isAddingPost
@@ -32,6 +33,58 @@ var app = function() {
 
     };
 
+    // Following function used to delte post
+    self.deletePost = function(postID){
+      $.post(del_post_url,
+          {
+              postID: postID
+          },
+          function () {
+              indx = null;
+              for(var i = 0; i < self.vue.posts.length; i++){
+                  if(self.vue.posts[i].id === postID){
+                      idx = i + 1;
+                      break;
+                  }
+              }
+              if(idx){
+                  self.vue.posts.splice(idx-1, 1);
+              }
+          }
+      )
+    };
+
+    // Following is used to edit post
+    self.editPostNotify = function (postID) {
+        if(self.vue.isEditing){
+            self.vue.isEditing = null;
+        }else{
+            self.vue.isEditing = postID;
+        }
+
+    }
+
+    self.submitEdit = function(postID){
+        $.post(edit_post_url,
+            {
+                postID: postID,
+                post_content: self.vue.post_content
+            },
+            function () {
+                indx = null;
+                for(var i = 0; i < self.vue.post.length; i++){
+                    if(self.vue.post[i].id === postID){
+                        idx = i + 1;
+                        break;
+                    }
+                }
+                if(idx){
+                    self.vue.posts[idx].post_content = post_content;
+                }
+            }
+        )
+    }
+    // Following two functions are used to display post
     function get_post_url(start_idx, end_idx){
 
         var pp = {
@@ -42,15 +95,13 @@ var app = function() {
     }
 
     self.getPost = function(){
-        $.getJSON(get_post_url(0, 3), function (data) {
+        $.getJSON(get_post_url(0, 4), function (data) {
             self.vue.posts = data.posts;
             self.vue.has_more = data.has_more;
             self.vue.loggedIn = data.loggedIn;
 
         })
     };
-
-
     // Complete as needed.
     self.vue = new Vue({
         el: "#vue-div",
@@ -60,17 +111,22 @@ var app = function() {
             has_more: false,
             loggedIn: false,
             isAddingPost: false,
+            isEditing: null,
             posts: [],
-            post_content: null
+            post_content: null,
+            user_email: null
         },
         methods: {
             getPost: self.getPost,
             newPostButton: self.newPostButton,
-            addNewPost: self.addNewPost
+            addNewPost: self.addNewPost,
+            deletePost: self.deletePost,
+            submitEdit: self.submitEdit,
+            editPostNotify: self.editPostNotify
         }
 
     });
-
+    console.log(self.user_email);
     self.getPost();
     $("#vue-div").show();
     return self;
